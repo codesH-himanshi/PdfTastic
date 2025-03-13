@@ -54,14 +54,14 @@ async function generatePDF() {
   const formData = new FormData();
   uploadedImages.forEach((item) => formData.append("images", item.file));
 
-  const response = await fetch("/generate-pdf", {
+  const response = await fetch("https://pdftastic.onrender.com/generate-pdf", {
     method: "POST",
     body: formData,
   });
   const result = await response.json();
 
   if (result.url) {
-    document.getElementById("pdf-preview").src = result.url;
+    document.getElementById("pdf-preview").src = 'https://pdftastic.onrender.com/output.pdf';
   }
   loadingIndicator.style.display = "none";
 }
