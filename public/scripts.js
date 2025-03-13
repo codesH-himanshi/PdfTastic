@@ -8,13 +8,24 @@ function saveToLocalStorage() {
 }
 
 imageInput.addEventListener("change", (event) => {
-  uploadedImages = [...event.target.files].map((file, index) => ({
-    file,
-    order: index + 1,
-  }));
-  saveToLocalStorage();
-  displayImages();
+  const files = [...event.target.files];
+
+  files.forEach((file, index) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      uploadedImages.push({
+        dataUrl: e.target.result, // Store image as base64 Data URL
+        name: file.name, // Store file name for reference
+        order: uploadedImages.length + 1, // Keep previous order intact
+        file: file // Store the actual file for later uploads
+      });
+      saveToLocalStorage();
+      displayImages();
+    };
+    reader.readAsDataURL(file);
+  });
 });
+
 
 function displayImages() {
   imageContainer.innerHTML = "";
@@ -52,7 +63,22 @@ function removeImage(index) {
 async function generatePDF() {
   loadingIndicator.style.display = "block";
   const formData = new FormData();
-  uploadedImages.forEach((item) => formData.append("images", item.file));
+
+  uploadedImages.forEach((item, index) => {
+    if (item.file) {
+      formData.append("images", item.file); 
+    } else {
+      // Recreate File object from base64 if file was lost
+      const byteCharacters = atob(item.dataUrl.split(",")[1]);
+      const byteArrays = [];
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteArrays.push(byteCharacters.charCodeAt(i));
+      }
+      const byteArray = new Uint8Array(byteArrays);
+      const recreatedFile = new File([byteArray], item.name, { type: "image/jpeg" });
+      formData.append("images", recreatedFile);
+    }
+  });
 
   const response = await fetch("https://pdftastic.onrender.com/generate-pdf", {
     method: "POST",
@@ -65,4 +91,5 @@ async function generatePDF() {
   }
   loadingIndicator.style.display = "none";
 }
+
 displayImages();
