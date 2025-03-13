@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const { PDFDocument } = require("pdf-lib");
 const fs = require("fs");
 const path = require("path");
-const Image = require("./models/Image"); // Import Image model
+const Image = require("./models/image"); // Import Image model
 
 const app = express();
 const port = process.env.PORT || 5000;
