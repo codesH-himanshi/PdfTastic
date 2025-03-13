@@ -9,6 +9,7 @@ const app = express();
 const port = 5000;
 
 app.use(cors());
+app.use(cors({ origin: "https://codesh-himanshi.github.io/PdfTastic/" }));
 app.use(express.json());
 app.use(express.static("uploads")); // Serve uploaded PDFs
 
