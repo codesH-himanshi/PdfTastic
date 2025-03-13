@@ -1,0 +1,146 @@
+body {
+  background-color: black;
+  color: white;
+}
+header {
+  width: 95%;
+  top: 0;
+  position: relative;
+  padding-top: 20px;
+  left: 0px;
+  padding-left: 28px;
+}
+
+main {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+#upload-section {
+  width: 50%;
+}
+#preview-section {
+  width: 45%;
+  padding: 10px;
+}
+#image-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.image-box {
+  position: relative;
+  width: 300px;
+}
+.image-box img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.image-number {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: black;
+  color: white;
+  padding: 3px;
+  border-radius: 15%;
+}
+.image-input {
+  width: 40px;
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+}
+.button-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.custom-button {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.upload-button {
+  /* Button */
+
+  box-sizing: border-box;
+
+  /* Auto layout */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  gap: 8px;
+
+  width: 245.5px;
+  height: 40px;
+
+  background: #e3e3e3;
+  color: black;
+  border: 1px solid #767676;
+  border-radius: 8px;
+
+  /* Inside auto layout */
+  flex: none;
+  order: 0;
+  flex-grow: 1;
+}
+.pdf-button {
+  /* Button */
+
+  box-sizing: border-box;
+
+  /* Auto layout */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  gap: 8px;
+
+  width: 245.5px;
+  height: 40px;
+
+  background: #2c2c2c;
+  color: white;
+  border: 1px solid #2c2c2c;
+  border-radius: 8px;
+
+  /* Inside auto layout */
+  flex: none;
+  order: 1;
+  flex-grow: 1;
+}
+
+.delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 2px 5px;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 3px;
+}
+.icon {
+  margin-right: 8px;
+}
+
+#loading {
+    display: none;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+}
