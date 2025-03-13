@@ -8,7 +8,6 @@ const path = require("path");
 const app = express();
 const port = 5000;
 
-app.use(cors());
 app.use(cors({ origin: "https://codesh-himanshi.github.io/PdfTastic/" }));
 app.use(express.json());
 app.use(express.static("uploads")); // Serve uploaded PDFs
@@ -17,7 +16,7 @@ app.use(express.static("uploads")); // Serve uploaded PDFs
 app.use(express.static(path.join(__dirname, "public")));
 
 // Configure multer for file uploads
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "/tmp/uploads/" });
 
 // Serve index.html when accessing root URL
 app.get("/", (req, res) => {
