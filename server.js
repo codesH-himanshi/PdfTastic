@@ -72,10 +72,11 @@ app.post("/upload-images", upload.array("images"), async (req, res) => {
 
         res.json({ message: "Images uploaded successfully", images: savedImages });
     } catch (error) {
-        console.error("Error saving images:", error);
-        res.status(500).json({ error: "Error saving images" });
+        console.error("🔥 Error uploading images:", error);  // Debugging info
+        res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 });
+
 
 // API to retrieve images from MongoDB
 app.get("/get-images", async (req, res) => {
