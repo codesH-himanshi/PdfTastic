@@ -29,6 +29,10 @@ app.use(express.static("public")); // Serve uploaded PDFs
 
 // Configure multer for file uploads
 const uploadPath = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
+app.use("/uploads", express.static(uploadPath));
 const storage = multer.diskStorage({
     destination: async (req, file, cb) => {
         try {
@@ -55,9 +59,12 @@ app.post("/upload-images", upload.array("images"), async (req, res) => {
             return res.status(400).json({ error: "No images uploaded" });
         }
 
+        console.log("Uploaded files:", req.files);  // Debugging output
+
         let savedImages = [];
         for (const file of req.files) {
             const imageUrl = `https://pdftastic.onrender.com/uploads/${file.filename}`;
+            console.log("📷 Saving image:", imageUrl); // Debugging
             const newImage = new Image({
                 filename: file.filename,
                 url: imageUrl,
@@ -69,7 +76,7 @@ app.post("/upload-images", upload.array("images"), async (req, res) => {
 
         res.json({ message: "Images uploaded successfully", images: savedImages });
     } catch (error) {
-        console.error("🔥 Error uploading images:", error);  // Debugging info
+        console.error("Error uploading images:", error);  // Debugging info
         res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 });
