@@ -4,35 +4,44 @@ const loadingIndicator = document.getElementById("loading");
 
 let uploadedImages = JSON.parse(localStorage.getItem("uploadedImages")) || [];
 
-// 🔹 Ensure images from localStorage are converted back to valid File objects
-uploadedImages = uploadedImages.map(item => ({
-  ...item,
-  file: item.file
-    ? new File([], item.name, { type: "image/jpeg" })  // Recreate empty file
-    : null
-}));
-
 function saveToLocalStorage() {
   localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
 }
 
-imageInput.addEventListener("change", (event) => {
-  const files = [...event.target.files];
+// Upload images to the server & MongoDB
+async function uploadImageToServer(file) {
+  const formData = new FormData();
+  formData.append("images", file);
 
-  files.forEach((file) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      uploadedImages.push({
-        dataUrl: e.target.result,
-        name: file.name,
-        order: uploadedImages.length + 1,
-        file: file
+  try {
+    const response = await fetch("https://pdftastic.onrender.com/upload-images", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    if (result.images) {
+      result.images.forEach((img) => {
+        uploadedImages.push({
+          url: img.url,
+          name: img.filename,
+          order: uploadedImages.length + 1,
+        });
       });
       saveToLocalStorage();
       displayImages();
-    };
-    reader.readAsDataURL(file);
-  });
+    }
+  } catch (error) {
+    console.error("Error uploading image:", error);
+  }
+}
+
+imageInput.addEventListener("change", async (event) => {
+  const files = [...event.target.files];
+
+  for (const file of files) {
+    await uploadImageToServer(file);
+  }
 });
 
 function displayImages() {
@@ -44,7 +53,7 @@ function displayImages() {
     div.className = "image-box";
     div.innerHTML = `
       <span class="image-number">${item.order}</span>
-      <img src="${item.dataUrl}" alt="Uploaded Image">
+      <img src="${item.url}" alt="Uploaded Image">
       <input type="number" class="image-input" min="1" value="${item.order}" data-index="${index}" onchange="updateOrder(event)">
       <button class="delete-button" onclick="removeImage(${index})">X</button>
     `;
@@ -55,6 +64,7 @@ function displayImages() {
 function updateOrder(event) {
   const index = parseInt(event.target.dataset.index);
   uploadedImages[index].order = parseInt(event.target.value);
+  uploadedImages.sort((a, b) => a.order - b.order);
   saveToLocalStorage();
   displayImages();
 }
@@ -67,34 +77,21 @@ function removeImage(index) {
 
 async function generatePDF() {
   loadingIndicator.style.display = "block";
-  const formData = new FormData();
 
-  uploadedImages.forEach((item) => {
-    if (item.file instanceof File) {
-      formData.append("images", item.file);
-    } else {
-      // Recreate File from base64 data URL
-      const byteCharacters = atob(item.dataUrl.split(",")[1]);
-      const byteArrays = [];
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteArrays.push(byteCharacters.charCodeAt(i));
-      }
-      const byteArray = new Uint8Array(byteArrays);
-      const recreatedFile = new File([byteArray], item.name, { type: "image/jpeg" });
-      formData.append("images", recreatedFile);
+  try {
+    const response = await fetch("https://pdftastic.onrender.com/generate-pdf", {
+      method: "POST",
+    });
+
+    const result = await response.json();
+    if (result.url) {
+      document.getElementById("pdf-preview").src = result.url;
     }
-  });
-
-  const response = await fetch("https://pdftastic.onrender.com/generate-pdf", {
-    method: "POST",
-    body: formData,
-  });
-  const result = await response.json();
-
-  if (result.url) {
-    document.getElementById("pdf-preview").src = "https://pdftastic.onrender.com/output.pdf";
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+  } finally {
+    loadingIndicator.style.display = "none";
   }
-  loadingIndicator.style.display = "none";
 }
 
 displayImages();
