@@ -3,8 +3,7 @@ const multer = require("multer");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const { PDFDocument } = require("pdf-lib");
-const fs = require("fs"); 
-const fs = require("fs").promises; // Using fs.promises for async operations
+const fs = require("fs").promises; // ✅ Only Import Asynchronous `fs`
 const path = require("path");
 const Image = require("./models/image"); // Import Image model
 
@@ -12,11 +11,11 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Connect to MongoDB
-mongoose.connect("mongodb+srv://admin:Vxki.F-bNr7_8Q7@dictionaryappcluster.s4few.mongodb.net/DictionaryAppCluster?retryWrites=true&w=majority")
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.error("MongoDB Connection Error:", err));
+mongoose.connect("mongodb+srv://admin:password@dictionaryappcluster.s4few.mongodb.net/DictionaryAppCluster?retryWrites=true&w=majority") 
+    .then(() => console.log("✅ MongoDB Connected"))
+    .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// CORS configuration (supports multiple origins)
+// CORS configuration
 const allowedOrigins = ["https://codesh-himanshi.github.io/PdfTastic/", "http://localhost:3000"];
 app.use(cors({
   origin: "*", // Allow all origins
@@ -24,48 +23,52 @@ app.use(cors({
   allowedHeaders: "Content-Type,Authorization"
 }));
 
-
 app.use(express.json());
 app.use(express.static("public")); // Serve uploaded PDFs
 
 // Configure multer for file uploads
 const uploadPath = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
-}
+
+(async () => {
+    try {
+        await fs.mkdir(uploadPath, { recursive: true }); // ✅ Ensure uploads directory exists
+        console.log("📂 Uploads directory is ready");
+    } catch (err) {
+        console.error("❌ Error creating uploads directory:", err);
+    }
+})();
+
 app.use("/uploads", express.static(uploadPath));
+
 const storage = multer.diskStorage({
-    destination: async (req, file, cb) => {
-        try {
-            await fs.mkdir(uploadPath, { recursive: true }); // Ensure directory exists
-            cb(null, uploadPath);
-        } catch (err) {
-            cb(err);
-        }
+    destination: (req, file, cb) => {
+        cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
+
 const upload = multer({ storage: storage });
 
+// Serve Homepage
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// API to upload images and save to MongoDB
+// ✅ API to Upload Images and Save to MongoDB
 app.post("/upload-images", upload.array("images"), async (req, res) => {
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ error: "No images uploaded" });
         }
 
-        console.log("Uploaded files:", req.files);  // Debugging output
+        console.log("📸 Uploaded files:", req.files);
 
         let savedImages = [];
         for (const file of req.files) {
             const imageUrl = `https://pdftastic.onrender.com/uploads/${file.filename}`;
-            console.log("📷 Saving image:", imageUrl); // Debugging
+            console.log("✅ Saving image:", imageUrl);
             const newImage = new Image({
                 filename: file.filename,
                 url: imageUrl,
@@ -75,26 +78,25 @@ app.post("/upload-images", upload.array("images"), async (req, res) => {
             savedImages.push(newImage);
         }
 
-        res.json({ message: "Images uploaded successfully", images: savedImages });
+        res.json({ message: "✅ Images uploaded successfully", images: savedImages });
     } catch (error) {
-        console.error("Error uploading images:", error);  // Debugging info
+        console.error("❌ Error uploading images:", error);
         res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 });
 
-
-// API to retrieve images from MongoDB
+// ✅ API to Retrieve Images
 app.get("/get-images", async (req, res) => {
     try {
         const images = await Image.find().sort({ order: 1 });
         res.json({ images });
     } catch (error) {
-        console.error("Error fetching images:", error);
+        console.error("❌ Error fetching images:", error);
         res.status(500).json({ error: "Error fetching images" });
     }
 });
 
-// API to generate PDF from images stored in MongoDB
+// ✅ API to Generate PDF from Images
 app.post("/generate-pdf", async (req, res) => {
     try {
         const images = await Image.find().sort({ order: 1 });
@@ -118,7 +120,7 @@ app.post("/generate-pdf", async (req, res) => {
                     height: image.height,
                 });
             } catch (err) {
-                console.warn(`⚠ Image file not found: ${imagePath}`);
+                console.warn(`⚠️ Image file not found: ${imagePath}`);
             }
         }
 
@@ -128,20 +130,20 @@ app.post("/generate-pdf", async (req, res) => {
             await fs.unlink(pdfPath);
             console.log("🗑️ Previous PDF deleted.");
         } catch (err) {
-            if (err.code !== "ENOENT") console.error("⚠ Error deleting old PDF:", err);
+            if (err.code !== "ENOENT") console.error("⚠️ Error deleting old PDF:", err);
         }
 
         // Save new PDF
         await fs.writeFile(pdfPath, await pdfDoc.save());
 
-        res.json({ url: `https://pdftastic.onrender.com/output.pdf` });
+        res.json({ url: `https://pdftastic.onrender.com/uploads/output.pdf` });
     } catch (error) {
-        console.error("Error generating PDF:", error);
+        console.error("❌ Error generating PDF:", error);
         res.status(500).json({ error: "Error generating PDF" });
     }
 });
 
-// Start the server
+// ✅ Start the Server
 app.listen(port, () => {
     console.log(`🚀 Server running at http://localhost:${port}`);
 });
