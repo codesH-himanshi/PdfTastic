@@ -3,6 +3,7 @@ const multer = require("multer");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const { PDFDocument } = require("pdf-lib");
+const fs = require("fs"); 
 const fs = require("fs").promises; // Using fs.promises for async operations
 const path = require("path");
 const Image = require("./models/image"); // Import Image model
