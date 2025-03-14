@@ -96,7 +96,7 @@ async function generatePDF() {
 
 displayImages();
 
-document.querySelector(".pdf-button").addEventListener("click", async () => {
+document.querySelector(".clear-images").addEventListener("click", async () => {
   // Remove images from the frontend
   document.getElementById("image-container").innerHTML = "";
 
