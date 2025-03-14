@@ -17,8 +17,6 @@ mongoose.connect("mongodb+srv://admin:Vxki.F-bNr7_8Q7@dictionaryappcluster.s4few
 
 // CORS configuration (supports multiple origins)
 const allowedOrigins = ["https://codesh-himanshi.github.io/PdfTastic/", "http://localhost:3000"];
-const cors = require("cors");
-
 app.use(cors({
   origin: "*", // Allow all origins
   methods: "GET,POST,PUT,DELETE",
