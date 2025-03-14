@@ -95,3 +95,20 @@ async function generatePDF() {
 }
 
 displayImages();
+
+document.querySelector(".pdf-button").addEventListener("click", async () => {
+  // Remove images from the frontend
+  document.getElementById("image-container").innerHTML = "";
+
+  // Send a request to the backend to delete all images
+  try {
+      const response = await fetch("https://pdftastic.onrender.com/clear-images", {
+          method: "DELETE",
+      });
+      const data = await response.json();
+      console.log(data.message);
+  } catch (error) {
+      console.error("Error clearing images:", error);
+  }
+});
+
