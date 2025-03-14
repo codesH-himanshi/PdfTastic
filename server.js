@@ -17,15 +17,14 @@ mongoose.connect("mongodb+srv://admin:Vxki.F-bNr7_8Q7@dictionaryappcluster.s4few
 
 // CORS configuration (supports multiple origins)
 const allowedOrigins = ["https://codesh-himanshi.github.io/PdfTastic/", "http://localhost:3000"];
+const cors = require("cors");
+
 app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    }
+  origin: "*", // Allow all origins
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization"
 }));
+
 
 app.use(express.json());
 app.use(express.static("public")); // Serve uploaded PDFs
