@@ -8,7 +8,6 @@ function saveToLocalStorage() {
   localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
 }
 
-// Upload images to the server & MongoDB
 async function uploadImageToServer(file) {
   const formData = new FormData();
   formData.append("images", file);
@@ -110,7 +109,6 @@ document.querySelector(".clear-images").addEventListener("click", async () => {
   }
 });
 
-// Display saved images
 displayImages();
 
 // Clear images when closing the browser

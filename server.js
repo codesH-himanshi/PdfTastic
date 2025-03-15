@@ -12,8 +12,8 @@ const port = process.env.PORT || 5000;
 
 // MongoDB Connection
 mongoose.connect("mongodb+srv://admin:jWuZ8x820022VYyqP@dictionaryappcluster.s4few.mongodb.net/DictionaryAppCluster?retryWrites=true&w=majority")
-    .then(() => console.log("✅ MongoDB Connected"))
-    .catch(err => console.error("❌ MongoDB Connection Error:", err));
+    .then(() => console.log("MongoDB Connected"))
+    .catch(err => console.error("MongoDB Connection Error:", err));
 
 // CORS Configuration
 app.use(cors({ origin: "*", methods: "GET,POST,PUT,DELETE", allowedHeaders: "Content-Type,Authorization" }));
@@ -28,7 +28,7 @@ const uploadPath = path.join(__dirname, "uploads");
         await fs.mkdir(uploadPath, { recursive: true });
         console.log("📂 Uploads directory is ready");
     } catch (err) {
-        console.error("❌ Error creating uploads directory:", err);
+        console.error("Error creating uploads directory:", err);
     }
 })();
 app.use("/uploads", express.static(uploadPath));
@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ✅ Upload Images
+// Upload Images
 app.post("/upload-images", upload.array("images"), async (req, res) => {
     try {
         if (!req.files || req.files.length === 0) return res.status(400).json({ error: "No images uploaded" });
@@ -56,25 +56,25 @@ app.post("/upload-images", upload.array("images"), async (req, res) => {
             await newImage.save();
             savedImages.push(newImage);
         }
-        res.json({ message: "✅ Images uploaded successfully", images: savedImages });
+        res.json({ message: "Images uploaded successfully", images: savedImages });
     } catch (error) {
-        console.error("❌ Error uploading images:", error);
+        console.error("Error uploading images:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-// ✅ Get Images
+// Get Images
 app.get("/get-images", async (req, res) => {
     try {
         const images = await Image.find().sort({ order: 1 });
         res.json({ images });
     } catch (error) {
-        console.error("❌ Error fetching images:", error);
+        console.error("Error fetching images:", error);
         res.status(500).json({ error: "Error fetching images" });
     }
 });
 
-// ✅ Generate PDF
+// Generate PDF
 app.post("/generate-pdf", async (req, res) => {
     try {
         const images = await Image.find().sort({ order: 1 });
@@ -99,7 +99,7 @@ app.post("/generate-pdf", async (req, res) => {
             }
         }
 
-        // ✅ Prevent Error When Deleting Old PDFs
+        // Prevent Error When Deleting Old PDFs
         const pdfPath = path.join(uploadPath, "output.pdf");
         try {
             if (await fs.access(pdfPath).then(() => true).catch(() => false)) {
@@ -109,16 +109,16 @@ app.post("/generate-pdf", async (req, res) => {
             console.error("⚠️ Error deleting old PDF:", err);
         }
 
-        // ✅ Save New PDF
+        // Save New PDF
         await fs.writeFile(pdfPath, await pdfDoc.save());
         res.json({ url: `https://pdftastic.onrender.com/uploads/output.pdf` });
     } catch (error) {
-        console.error("❌ Error generating PDF:", error);
+        console.error("Error generating PDF:", error);
         res.status(500).json({ error: "Error generating PDF" });
     }
 });
 
-// ✅ Clear Images (but keep PDFs)
+// Clear Images (but keep PDFs)
 app.delete("/clear-images", async (req, res) => {
     try {
         const files = await fs.readdir(uploadPath);
@@ -128,12 +128,12 @@ app.delete("/clear-images", async (req, res) => {
             }
         }
         await Image.deleteMany({});
-        res.json({ message: "✅ Images deleted successfully" });
+        res.json({ message: "Images deleted successfully" });
     } catch (error) {
-        console.error("❌ Error clearing images:", error);
+        console.error("Error clearing images:", error);
         res.status(500).json({ error: "Error clearing images" });
     }
 });
 
-// ✅ Start Server
+// Start Server
 app.listen(port, () => console.log(`🚀 Server running at http://localhost:${port}`));
