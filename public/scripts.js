@@ -8,7 +8,10 @@ function saveToLocalStorage() {
   localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
 }
 
-async function uploadImageToServer(file) {
+const progressBarContainer = document.querySelector(".upload-progress-container");
+const progressBar = document.querySelector(".upload-progress-bar");
+
+async function uploadImageToServer(file, totalFiles, fileIndex) {
   const formData = new FormData();
   formData.append("images", file);
 
@@ -32,14 +35,31 @@ async function uploadImageToServer(file) {
     }
   } catch (error) {
     console.error("Error uploading image:", error);
+  } finally {
+    // Update progress bar
+    const progress = ((fileIndex + 1) / totalFiles) * 100;
+    progressBar.style.width = `${progress}%`;
+
+    // Hide progress bar when all uploads are complete
+    if (fileIndex + 1 === totalFiles) {
+      setTimeout(() => {
+        progressBarContainer.style.display = "none";
+        progressBar.style.width = "0%"; // Reset for next upload
+      }, 500);
+    }
   }
 }
 
 imageInput.addEventListener("change", async (event) => {
   const files = [...event.target.files];
 
-  for (const file of files) {
-    await uploadImageToServer(file);
+  if (files.length === 0) return;
+
+  // Show progress bar
+  progressBarContainer.style.display = "block";
+
+  for (let i = 0; i < files.length; i++) {
+    await uploadImageToServer(files[i], files.length, i);
   }
 });
 
