@@ -1,6 +1,9 @@
 body {
   background-color: black;
   color: white;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 header {
   width: 95%;
@@ -161,5 +164,66 @@ main {
   width: 0%;
   background-color: #4caf50;
   transition: width 0.3s ease-in-out;
+}
+
+/* Larger screens */
+@media (max-width: 1024px) {
+  main {
+    flex-direction: column;
+    align-items: center;
+  }
+  #upload-section, #preview-section {
+    width: 100%;
+  }
+  .image-box {
+    width: 80%;
+  }
+}
+
+/* Tablets */
+@media (max-width: 900px) {
+  main {
+    flex-direction: column;
+    align-items: center;
+  }
+  #upload-section, #preview-section {
+    width: 100%;
+  }
+  .image-box {
+    width: 90%;
+  }
+}
+
+/* Medium screens */
+@media (max-width: 600px) {
+  main {
+    flex-direction: column;
+    align-items: center;
+  }
+  #upload-section, #preview-section {
+    width: 100%;
+  }
+  .image-box {
+    width: 90%;
+  }
+  .button-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .custom-button {
+    width: 100%;
+  }
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  button {
+    font-size: 14px;
+    padding: 10px;
+    max-width: 100%;
+  }
+  #pdf-preview {
+    min-height: 200px;
+  }
 }
 
