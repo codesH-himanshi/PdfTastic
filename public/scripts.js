@@ -94,8 +94,6 @@ async function generatePDF() {
   }
 }
 
-displayImages();
-
 document.querySelector(".clear-images").addEventListener("click", async () => {
   // Remove images from the frontend
   document.getElementById("image-container").innerHTML = "";
@@ -111,4 +109,19 @@ document.querySelector(".clear-images").addEventListener("click", async () => {
       console.error("Error clearing images:", error);
   }
 });
+
+// Display saved images
+displayImages();
+
+// Clear images when closing the browser
+window.addEventListener("beforeunload", async () => {
+  try {
+    await fetch("https://pdftastic.onrender.com/clear-images", {
+      method: "DELETE",
+    });
+  } catch (error) {
+    console.error("Error clearing images on unload:", error);
+  }
+});
+
 
