@@ -145,14 +145,18 @@ app.post("/generate-pdf", async (req, res) => {
 
 app.delete("/clear-images", async (req, res) => {
     try {
-        // Delete images from MongoDB
-        await Image.deleteMany({});
+        // Delete images from storage (if applicable)
+        const fs = require("fs");
+        const uploadDir = "./uploads";
+        fs.readdir(uploadDir, (err, files) => {
+            if (err) throw err;
+            for (const file of files) {
+                fs.unlinkSync(`${uploadDir}/${file}`);
+            }
+        });
 
-        // Delete images from the uploads folder
-        const files = await fs.readdir(uploadPath);
-        for (const file of files) {
-            await fs.unlink(path.join(uploadPath, file));
-        }
+        // Delete image references from database
+        await Image.deleteMany({});
 
         res.json({ message: "All images cleared successfully" });
     } catch (error) {
@@ -160,6 +164,7 @@ app.delete("/clear-images", async (req, res) => {
         res.status(500).json({ error: "Error clearing images" });
     }
 });
+
 
 
 // ✅ Start the Server
