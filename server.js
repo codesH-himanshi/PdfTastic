@@ -94,6 +94,10 @@ app.post("/generate-pdf", async (req, res) => {
                 }
                 const page = pdfDoc.addPage([image.width, image.height]);
                 page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
+
+                // Delete image after embedding it into PDF
+                await fs.unlink(imagePath);
+                await Image.deleteOne({ _id: imageData._id });
             } catch (err) {
                 console.warn(`⚠️ Image file not found: ${imagePath}`);
             }
@@ -101,15 +105,6 @@ app.post("/generate-pdf", async (req, res) => {
 
         // Prevent Error When Deleting Old PDFs
         const pdfPath = path.join(uploadPath, "output.pdf");
-        try {
-            if (await fs.access(pdfPath).then(() => true).catch(() => false)) {
-                await fs.unlink(pdfPath);
-            }
-        } catch (err) {
-            console.error("⚠️ Error deleting old PDF:", err);
-        }
-
-        // Save New PDF
         await fs.writeFile(pdfPath, await pdfDoc.save());
         res.json({ url: `https://pdftastic.onrender.com/uploads/output.pdf` });
     } catch (error) {
