@@ -26,6 +26,3 @@ This project allows users to upload images, arrange them in their preferred orde
 2. Assign order numbers to images or delete unwanted ones.
 3. Click **Generate PDF** and wait for the preview.
 4. Download or preview the generated PDF.
-
-## Contributing
-Feel free to submit issues or pull requests if you'd like to improve the project.
